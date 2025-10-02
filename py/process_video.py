@@ -63,19 +63,34 @@ def process_video(video_path: Path,
 
     # ---------------- 상태 초기화 ----------------
     n_frames, n_json, final_json_count = 0, 0, 0
-    frames_done = frame_dir.exists() and any(frame_dir.glob("*.jpg"))
-    sapiens_done = keypoint_dir.exists() and any(keypoint_dir.glob("*.json"))
-    overlay_done = mp4_path.exists()
-    reextract_done = False
+
+    # metadata.csv에서 이전 상태 읽어오기
+    if CSV_PATH.exists() and CSV_PATH.stat().st_size > 0:
+        df = pd.read_csv(CSV_PATH)
+        if str(rel_video_path) in df["video_path"].values:
+            prev = df[df["video_path"] == str(rel_video_path)].iloc[0].to_dict()
+        else:
+            prev = {}
+    else:
+        df = pd.DataFrame()
+        prev = {}
+
+    # 이전 상태를 그대로 사용 (없으면 기본 False)
+    frames_done    = prev.get("frames_done", False)
+    sapiens_done   = prev.get("sapiens_done", False)
+    reextract_done = prev.get("reextract_done", False)
+    overlay_done   = prev.get("overlay_done", False)
 
     # ---------------- 1. 프레임 추출 ----------------
     if run_frames:
+        print("run_frames를 skip 하지 않습니다.")
         n_frames = extract_frames(str(video_path), str(frame_dir))
         print(f"[INFO] 프레임 추출 완료: {n_frames} frames")
         frames_done = True
 
     # ---------------- 2. Sapiens 실행 ----------------
     if run_sapiens:
+        print("run_sapiens를 skip 하지 않습니다.")
         n_json = extract_keypoints(
             str(frame_dir), str(keypoint_dir),
             det_cfg  = str(BASE_DIR / "sapiens/pose/demo/mmdetection_cfg/rtmdet_m_640-8xb32_coco-person_no_nms.py"),
@@ -84,11 +99,13 @@ def process_video(video_path: Path,
             pose_ckpt= str(BASE_DIR / "sapiens/pose/checkpoints/sapiens_0.3b/sapiens_0.3b_coco_best_coco_AP_796.pth"),
             device="cuda:0"
         )
+
         print(f"[INFO] Sapiens 추출 완료: {n_json} JSON")
         sapiens_done = True
 
     # ---------------- 3. 누락 프레임 보정 ----------------
     if run_reextract:
+        print("run_reextract를 skip 하지 않습니다.")
         if n_frames == 0 and frame_dir.exists():
             n_frames = len(list(frame_dir.glob("*.jpg")))
 
@@ -110,6 +127,7 @@ def process_video(video_path: Path,
 
     # ---------------- 4. Overlay 생성 ----------------
     if run_overlay:
+        print("run_overlay를 skip 하지 않습니다.")
         create_overlay(str(frame_dir), str(keypoint_dir), str(mp4_path), fps=30)
         print(f"[INFO] Overlay mp4 생성 완료 → {mp4_path}")
         overlay_done = True

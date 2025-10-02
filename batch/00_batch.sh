@@ -4,7 +4,7 @@
 #SBATCH -o /mnt/nas203/ds_RehabilitationMedicineData/IDs/Kimjihoo/3_project_HCCmove/batch/logs/%A.out
 #SBATCH --mail-type END,TIME_LIMIT_90,REQUEUE,INVALID_DEPEND
 #SBATCH --mail-user jihu6033@gmail.com
-#SBATCH -p TitanRTX
+#SBATCH -p RTX3090
 #SBATCH --gpus 1
 
 
