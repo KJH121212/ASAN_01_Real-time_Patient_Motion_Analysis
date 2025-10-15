@@ -42,8 +42,8 @@ def process_video(video_path: Path,
     # ---------------- 경로 설정 ----------------
     rel_path = video_path.relative_to(BASE_DIR / "data" / "0_RAW_DATA").with_suffix("")
 
-    frame_dir    = BASE_DIR / "data" / "1_FRAME"    / rel_path.parent / (rel_path.name + "_frames")
-    keypoint_dir = BASE_DIR / "data" / "2_KEYPOINTS"/ rel_path.parent / (rel_path.name + "_JSON")
+    frame_dir    = BASE_DIR / "data" / "1_FRAME"    / rel_path.parent / rel_path.name
+    keypoint_dir = BASE_DIR / "data" / "2_KEYPOINTS"/ rel_path.parent / rel_path.name
     mp4_path     = BASE_DIR / "data" / "3_MP4"     / rel_path.parent / (rel_path.name + ".mp4")
 
     rel_video_path     = video_path.relative_to(BASE_DIR / "data")

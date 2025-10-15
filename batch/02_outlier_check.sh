@@ -34,5 +34,5 @@ docker run -it --rm --device=nvidia.com/gpu=all --shm-size 1TB \
     ${DOCKER_IMAGE_NAME} \
     bash -c "
         cd /workspace/nas203/ds_RehabilitationMedicineData/IDs/Kimjihoo/3_project_HCCmove/py && \
-        python3 outlier_check.py
+        python3 interp_outlier_filter.py
     "
